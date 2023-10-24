@@ -1,0 +1,11 @@
+
+
+<%= form_tag(import_xml_quotations_path, method: :post) do %>
+  <div class="field">
+    <%= label_tag 'xml_source', 'XML Source URL' %>
+    <%= text_field_tag 'xml_source' %>
+  </div>
+  <div class="actions">
+    <%= submit_tag 'Import' %>
+  </div>
+<% end %>

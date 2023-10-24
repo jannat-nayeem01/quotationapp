@@ -18,8 +18,13 @@
 <br> 
 <div class="form_row">
 <%= form.label :category %>
-<%= form.select :category, options_for_select(@existing_categories, @quotation.category), include_blank: 'New category' %>
+<%= form.select :category, options_for_select(@existing_categories, @quotation.category), include_blank: 'Select category' %>
   </div>
+  <br/>
+  <div class="field">
+  <%= form.label :category, 'Or Enter a new category' %>
+  <%= form.text_field :category %>
+</div>
 
 <br> 
 <div class="form_row">
@@ -34,3 +39,4 @@
 </div>
 </p>
 <% end %>
+

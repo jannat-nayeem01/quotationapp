@@ -1,8 +1,8 @@
-<h1>New Quotation</h1>
+<<h1>New Quotation</h1>
 
-<%= render "form" %>
+<%= render "form", quotation: @quotation %>
 
-<br>
+<pre><%= @quotation.to_json %></pre>
 
 <div>
   <%= link_to "Back to Quotations", quotations_path %>
