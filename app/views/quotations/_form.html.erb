@@ -17,14 +17,17 @@
 </div>
 <br> 
 <div class="form_row">
-<%= form.label :category %>
-<%= form.select :category, options_for_select(@existing_categories, @quotation.category), include_blank: 'Select category' %>
-  </div>
-  <br/>
-  <div class="field">
-  <%= form.label :category, 'Or Enter a new category' %>
-  <%= form.text_field :category %>
+  <%= form.label :category %>
+  <%= debug @existing_categories %>
+
+  <%= form.select :category, options_for_select(@existing_categories, @quotation.category), include_blank: 'Select Category' %>
 </div>
+<br/>
+<div class="field">
+  <%= form.label :new_category, 'Enter a new category' %>
+  <%= form.text_field :new_category %>
+</div>
+
 
 <br> 
 <div class="form_row">

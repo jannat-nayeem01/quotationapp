@@ -1,3 +1,6 @@
 class Quotation < ApplicationRecord
-    validates_presence_of :author_name, :category, :quote
+    attr_accessor :new_category
+    belongs_to :category
+    validates_presence_of :author_name, :quote
+  
 end

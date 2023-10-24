@@ -6,12 +6,12 @@ class QuotationsController < ApplicationController
 
     def new
         @quotation = Quotation.new
-        @existing_categories = Quotation.distinct.pluck(:category)
-
+        @existing_categories = Category.distinct.pluck(:name).compact
     end
+    
     def show
         @quotation = Quotation.find(params[:id])
-      end
+    end
       
       def search
         @query = params[:query].downcase
@@ -38,27 +38,35 @@ class QuotationsController < ApplicationController
       end
     
 
-    def create
-        @quotation = Quotation.new(quotation_params)
+      
+      def create
+    @quotation = Quotation.new(quotation_params)
 
-        if params[:quotation][:category] == 'New category'
-            # The user entered a new category, so create it
-            new_category = params[:category]
-            # You may want to add additional validation here before creating the category
-            # For example, check if the category already exists
-            # Then, create a new category or handle errors as needed
-            category = Category.create(name: category)
-            @quotation.category = category.name
-          end
-        
-        if @quotation.save
-            flash[:notice] = 'Quotation was successfully created'
-            format.json { render :show, status: :created, location: @quotation }
-            @quotation = Quotation.new
-        end
+    if params[:quotation][:new_category].present?
+        new_category_name = params[:quotation][:new_category]
+        category = Category.create(name: new_category_name)
+        @quotation.category = category
+    elsif params[:quotation][:category].present?
+        @quotation.category_id = params[:quotation][:category]
     end
 
-    def quotation_params
-        params.require(:quotation).permit(:author_name, :category, :quote)
+    if @quotation.save
+        flash[:notice] = 'Quotation was successfully created'
+        redirect_to @quotation
+    else
+        render :new
     end
 end
+
+      
+        # ...
+      
+        private
+      
+        def quotation_params
+            params.require(:quotation).permit(:author_name, :quote, :category_id, :new_category)
+          end
+          
+      end
+      
+      

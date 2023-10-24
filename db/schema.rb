@@ -10,9 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_23_150859) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_24_110644) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "categories", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "quotations", force: :cascade do |t|
     t.string "author_name"
@@ -20,6 +26,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_23_150859) do
     t.text "quote"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "category_id"
+    t.index ["category_id"], name: "index_quotations_on_category_id"
   end
 
+  add_foreign_key "quotations", "categories"
 end

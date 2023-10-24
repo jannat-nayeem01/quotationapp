@@ -15,7 +15,7 @@
 <hr/>
 <%= link_to "New Quotation", new_quotation_path %>
 <hr/>
-  <% @quotations.each do |quotation| %>
+
     <% @quotations.each do |quotation| %>
       <%= render quotation %>
       <p>
@@ -23,7 +23,7 @@
       </p>
     <% end %>
   
-  <% end %>
+  
 </div>
 
 
