@@ -1,0 +1,27 @@
+<p style="color: green"><%= notice %></p>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<h1>Quotations Index</h1>
+
+  <!-- Add the search form at the top -->
+
+<div id="quotation">
+<%= form_tag(search_quotations_path, method: :get) do %>
+  <div class="form_row">
+    <%= text_field_tag :query, params[:query], placeholder: 'Enter a word to search' %>
+    <%= submit_tag 'Search' %>
+  </div>
+<% end %>
+  <% @quotations.each do |quotation| %>
+    <% @quotations.each do |quotation| %>
+      <%= render quotation %>
+      <p>
+        <%= link_to "Show this Quotation", quotation %>
+      </p>
+    <% end %>
+  
+  <% end %>
+</div>
+
+<%= link_to "New Quotation", new_quotation_path %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
