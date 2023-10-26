@@ -17,7 +17,7 @@
 </div>
 <br> 
 <div class="form_row">
-  <%= form.label :category %>
+  <%= form.label :category%>
   <%= debug @existing_categories %>
 
   <%= form.select :category, options_for_select(@existing_categories, @quotation.category), include_blank: 'Select Category' %>

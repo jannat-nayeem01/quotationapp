@@ -1,22 +1,30 @@
 class QuotationsController < ApplicationController
     def index
-        @quotations = Quotation.all
-        
-    end
+        @quotations = if params[:query].present?
+          search_quotations
+        else
+          Quotation.all
+        end
+      end
+    
 
     def new
         @quotation = Quotation.new
         @existing_categories = Category.distinct.pluck(:name).compact
-    end
-    
+        @existing_categories ||= [] 
+      end
+          
     def show
         @quotation = Quotation.find(params[:id])
     end
       
-      def search
+    def search
         @query = params[:query].downcase
-        @quotations = Quotation.where('LOWER(quote) LIKE ? OR LOWER(author_name) LIKE ?', "%#{@query}%", "%#{@query}%")
+        @quotations = search_quotations
+        render :index
       end
+    
+      
     
       def export_xml
         @quotations = Quotation.all
@@ -40,28 +48,40 @@ class QuotationsController < ApplicationController
 
       
       def create
-    @quotation = Quotation.new(quotation_params)
-
-    if params[:quotation][:new_category].present?
-        new_category_name = params[:quotation][:new_category]
-        category = Category.create(name: new_category_name)
-        @quotation.category = category
-    elsif params[:quotation][:category].present?
-        @quotation.category_id = params[:quotation][:category]
-    end
-
-    if @quotation.save
-        flash[:notice] = 'Quotation was successfully created'
-        redirect_to @quotation
-    else
-        render :new
-    end
-end
-
+        @quotation = Quotation.new(quotation_params)
+      
+        if params[:quotation][:category_id].present?
+          # User selected an existing category
+          existing_category_id = params[:quotation][:category_id]
+          @quotation.category_id = existing_category_id
+        else
+          # User entered a new category
+          if params[:quotation][:new_category].present?
+            new_category_name = params[:quotation][:new_category]
+            category = Category.create(name: new_category_name)
+            @quotation.category_id = category.id
+          end
+        end
+      
+        respond_to do |format|
+          if @quotation.save
+            flash[:notice] = 'Quotation was successfully created'
+            format.html { redirect_to @quotation }
+          else
+            format.html { render :new, status: :unprocessable_entity }
+            format.json { render json: @quotation.errors, status: :unprocessable_entity }
+          end
+        end
+      end
+      
       
         # ...
       
         private
+        def search_quotations
+            Quotation.where('quote ILIKE ? OR author_name ILIKE ?', "%#{@query}%", "%#{@query}%")
+          end
+        
       
         def quotation_params
             params.require(:quotation).permit(:author_name, :quote, :category_id, :new_category)
