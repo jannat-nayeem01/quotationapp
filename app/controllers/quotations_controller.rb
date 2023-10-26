@@ -1,4 +1,7 @@
 require 'nokogiri'
+require 'open-uri'
+require 'rexml/document'
+
 
 class QuotationsController < ApplicationController
     def index
@@ -64,11 +67,41 @@ class QuotationsController < ApplicationController
       end
     
     
-      def import_xml
-        # Implement the logic to parse the XML data from the source
-        # and save it to your database
+      def import_xml_external
+        if params[:xml_url].present?
+          url = params[:xml_url]
+    
+          begin
+            xml_data = open(url).read
+            import_quotations_from_xml(xml_data)
+            flash[:notice] = 'Quotations imported successfully'
+          rescue OpenURI::HTTPError => e
+            flash[:error] = "Error fetching data from the URL: #{e.message}"
+          rescue REXML::ParseException => e
+            flash[:error] = "Error parsing XML data: #{e.message}"
+          end
+        else
+          flash[:error] = 'Please provide a valid XML URL'
+        end
+    
+        redirect_to quotations_path
       end
     
+      def import_xml
+        begin
+          file_path = Rails.root.join('app', 'views', 'quotations', 'Importxml_test.xml')
+          xml_data = File.read(file_path)
+          import_quotations_from_xml(xml_data)
+          flash[:notice] = 'Quotations imported successfully'
+        rescue Errno::ENOENT
+          flash[:error] = 'XML file not found'
+        rescue REXML::ParseException => e
+          flash[:error] = "Error parsing XML data: #{e.message}"
+        end
+      
+        redirect_to quotations_path
+      end
+      
 
       
       def create
@@ -102,6 +135,22 @@ class QuotationsController < ApplicationController
         # ...
       
         private
+
+        def import_quotations_from_xml(xml_data)
+            doc = REXML::Document.new(xml_data)
+            doc.elements.each('quotations/quotation') do |quotation_element|
+              author_name = quotation_element.elements['author_name'].text
+              category_name = quotation_element.elements['category'].text
+              quote = quotation_element.elements['quote'].text
+          
+              # Find or create the Category based on the category_name
+              category = Category.find_or_create_by(name: category_name)
+          
+              Quotation.create(author_name: author_name, category: category, quote: quote)
+            end
+          end
+          
+        
         def search_quotations
             Quotation.where('quote ILIKE ? OR author_name ILIKE ?', "%#{@query}%", "%#{@query}%")
           end
