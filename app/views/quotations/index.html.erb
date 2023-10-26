@@ -16,7 +16,11 @@
 <hr/>
 
 <% if @query.present? %>
+<div>
+<%= link_to "Back", quotations_path %>
+</div>
   <h2>Search Results for "<%= @query %>"</h2>
+
 <% end %>
 
 <% @quotations.each do |quotation| %>

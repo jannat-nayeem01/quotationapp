@@ -1,3 +1,5 @@
+require 'nokogiri'
+
 class QuotationsController < ApplicationController
     def index
         @quotations = if params[:query].present?
@@ -28,17 +30,39 @@ class QuotationsController < ApplicationController
     
       def export_xml
         @quotations = Quotation.all
+    
+        # Build the XML document
+        xml_builder = Nokogiri::XML::Builder.new do |xml|
+          xml.quotations {
+            @quotations.each do |quotation|
+              xml.quotation {
+                xml.author_name quotation.author_name
+                xml.category quotation.category.name
+                xml.quote quotation.quote
+              }
+            end
+          }
+        end
+    
+        formatted_xml = xml_builder.to_xml(indent: 2)
+    
         respond_to do |format|
-          format.xml
+          format.xml { render xml: formatted_xml }
         end
       end
+    
+    
 
       def export_json
         @quotations = Quotation.all
+    
+        formatted_json = JSON.pretty_generate(JSON.parse(@quotations.to_json))
+    
         respond_to do |format|
-          format.json
+          format.json { render json: formatted_json }
         end
       end
+    
     
       def import_xml
         # Implement the logic to parse the XML data from the source
